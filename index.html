@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafe Explorer</title>
+    <link rel = "stylesheet" href = "stylr.css">
+</head>
+<body>
+    <!-- NAvigation Bar-->
+     <header>
+        <nav class="navbar">
+            <h1 class = "logo"> ☕Cafe Finder</h1>
+            <button id = "location-btn">
+                📍Find Near Me
+            </button>
+        </nav>
+     </header>
+
+     <!-- main content-->
+      <main>
+        <section class = "search-section">
+            <h2> Discover Your Perfect Coffee spot </h2>
+            <p> Find cafes around you and explore new places.</p>
+
+            <div class = "search-box">
+                <input
+                    type = "text"
+                    id = "search-input"
+                    placehoder = "Search cafes..."
+                >
+                <button id = "search-btn"> Search </button>   
+            </div>
+        </section>
+
+        <section class = "filters">
+            <select id = "rating-filter">
+                <option value="all"> All Ratings </option>
+                <option value = "4"> 4+ Stars </option>
+                <option value = "4.5"> 4.5+ Stars</option>
+            </select>
+
+            <select id = "distance-filters">
+                <option value = "all"> Any Distance</option>
+                <option value = "1"> within 1 Km </option>\
+                <option value = "5"> within 5 Km </option>
+                <option value = "10"> within 10 Km</option>
+            </select>
+
+            <select id = "price-filter">
+                <option value = "all"> Any Price</option>
+                <option value = "Inexpensive"> Inexpensive </option>
+                <option value = "moderate"> Moderate</option>
+                <option value = "Expensive">Expensive</option>
+            </select>
+
+            <label>
+                <input type = "checkbox" id = "open-filter">
+                Open Now
+            </label>
+        </section>
+        <p> No. of cafes found: </p> 
+        <section class = "results">
+            <div class = "Cafe-container">
+                <h2> Nearby cafes</h2>
+                <div id = "cafe-list">
+                    <!-- cafe cards will be added here-->
+                </div>
+            </div>
+
+            <div class = "map-container">
+                <h2> Map</h2>
+
+                <div id = "map">
+                    Map will appear here
+                </div>
+            </div>
+        </section>
+      </main>
+      <script src = "script.js"></script>
+</body>
+</html>
