@@ -4,24 +4,104 @@ const locationBtn = document.getElementById("location-btn")
 const cafeList = document.getElementById("cafe-list")
 const searchMessage = document.getElementById("search-message");
 
-searchBtn.addEventListener("click", function(){
-    const searchText = searchInput.value.trim();
+const cafes = [
+    {
+        name : "Starbucks", 
+        rating : 4.5,
+        address : "Magneto Mall, Raipur",
+        price : "₹₹₹"
+    }, 
+    {
+        name: "Cafe COffee Day",
+        rating : 4.2,
+        address : "Telibandha, Raipur", 
+        price : "₹₹₹"
+    },
+    {
+        name: "The Coffee House",
+        rating: 4.3,
+        address: "Shankar Nagar, Raipur",
+        description: "A cozy cafe with great coffee.",
+        price: "₹₹"
+    },
+    {
+        name: "Mocha Cafe",
+        rating: 4.6,
+        address: "VIP Road, Raipur",
+        description: "A cozy cafe with great coffee.",
+        price: "₹₹₹"
+    },
+    {
+        name: "Coffee Culture",
+        rating: 4.1,
+        address: "Pandri, Raipur",
+        description: "A cozy cafe with great coffee.",
+        price: "₹₹"
+    },
+    {
+        name: "Brewberrys",
+        rating: 4.4,
+        address: "Shankar Nagar, Raipur",
+        description: "A cozy cafe with great coffee.",
+        price: "₹₹"
+}
+]; 
 
-    if(searchText === ""){
-        searchMessage.textContent = "please enter a cafe name!";
+function displayCafes(cafeArray){
+    cafeList.innerHTML = "";
+
+    if(cafeArray.length === 0){
+        cafeList.innerHTML = "<p class = 'no-results'> No cafes found.</p>";
         return;
     }
 
-    searchMessage.textContent = "You searched for "+ searchText + "...";
+    cafeArray.forEach(function (cafe){
+        const cafeCard = document.createElement("div");
+        cafeCard.classList.add("cafe-card");
+        cafeCard.innerHTML = `
+            <h3>${cafe.name}</h3>
+            <p>⭐ ${cafe.rating}</p>
+            <p>📍 ${cafe.address}</p>
+            <p class="description">${cafe.description}</p>
+            <p>💰 ${cafe.price}</p>
+            <button class="details-btn">View Details</button>
+            `;
+            cafeList.appendChild(cafeCard);
+    });
+}
 
-    searchInput.value = "";
-});
-searchInput.addEventListener("input", function(){
-    searchMessage.textContent="";
-});
+function searchCafes(){
+    const searchText = searchInput.value.trim().toLowerCase();
+
+    if(searchText === ""){
+        searchMessage.textContent = "Please enter a cafe name!";
+        displayCafes(cafes);
+        return;
+    }
+    const filteredCafes = cafes.filter(function(cafe){
+        return cafe.name.toLowerCase().includes(searchText);
+    });
+
+    displayCafes(filteredCafes);
+
+    if(filteredCafes.length === 0){
+        searchMessage.textContent = "No cafes found.";
+    }
+    else{
+        searchMessage.textContent = `${filteredCafes.length} cafe(s) found.`;
+    }
+}
+searchBtn.addEventListener("click",searchCafes);
+
 searchInput.addEventListener("keydown", function (event) {
     if(event.key === "Enter"){
-        searchBtn.click();
+        searchCafes();
+    }
+});
+searchInput.addEventListener("input", function () {
+    if (searchInput.value.trim() === "") {
+        searchMessage.textContent = "";
+        displayCafes(cafes);
     }
 });
 
@@ -45,3 +125,5 @@ locationBtn.addEventListener("click", function(){
         searchMessage.textContent = "Geolocation is not supported by your browser.";
     }
 });
+
+displayCafes(cafes);
