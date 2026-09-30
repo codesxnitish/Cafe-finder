@@ -3,49 +3,7 @@ const searchBtn = document.getElementById("search-btn")
 const locationBtn = document.getElementById("location-btn")
 const cafeList = document.getElementById("cafe-list")
 const searchMessage = document.getElementById("search-message");
-
-const cafes = [
-    {
-        name : "Starbucks", 
-        rating : 4.5,
-        address : "Magneto Mall, Raipur",
-        price : "₹₹₹"
-    }, 
-    {
-        name: "Cafe COffee Day",
-        rating : 4.2,
-        address : "Telibandha, Raipur", 
-        price : "₹₹₹"
-    },
-    {
-        name: "The Coffee House",
-        rating: 4.3,
-        address: "Shankar Nagar, Raipur",
-        description: "A cozy cafe with great coffee.",
-        price: "₹₹"
-    },
-    {
-        name: "Mocha Cafe",
-        rating: 4.6,
-        address: "VIP Road, Raipur",
-        description: "A cozy cafe with great coffee.",
-        price: "₹₹₹"
-    },
-    {
-        name: "Coffee Culture",
-        rating: 4.1,
-        address: "Pandri, Raipur",
-        description: "A cozy cafe with great coffee.",
-        price: "₹₹"
-    },
-    {
-        name: "Brewberrys",
-        rating: 4.4,
-        address: "Shankar Nagar, Raipur",
-        description: "A cozy cafe with great coffee.",
-        price: "₹₹"
-}
-]; 
+const cafeDetails = document.getElementById("cafe-details");
 
 function displayCafes(cafeArray){
     cafeList.innerHTML = "";
@@ -56,6 +14,7 @@ function displayCafes(cafeArray){
     }
 
     cafeArray.forEach(function (cafe){
+        const{id,name,rating,address,price,description} = cafe;
         const cafeCard = document.createElement("div");
         cafeCard.classList.add("cafe-card");
         cafeCard.innerHTML = `
@@ -64,11 +23,40 @@ function displayCafes(cafeArray){
             <p>📍 ${cafe.address}</p>
             <p class="description">${cafe.description}</p>
             <p>💰 ${cafe.price}</p>
-            <button class="details-btn">View Details</button>
+            <button class="details-btn" data-id="${cafe.id}">View Details</button>
             `;
             cafeList.appendChild(cafeCard);
     });
 }
+if(cafeList){
+    cafeList.addEventListener("click", function(event){
+        if(event.target.classList.contains("details-btn")){
+            const cafeId = Number(event.target.dataset.id);
+            const selectedCafe = cafes.find(function(cafe){
+                return cafe.id === cafeId;
+            });
+            if (selectedCafe && cafeDetails) {
+                const {
+                    name,
+                    rating,
+                    address,
+                    price,
+                    description
+                } = selectedCafe;
+
+                cafeDetails.innerHTML = `
+                    <div class="details-card">
+                    <h3>${name}</h3>
+                    <p>⭐ Rating: ${rating}</p>
+                    <p>📍 Address: ${address}</p>
+                    <p>💰 Price: ${price}</p>
+                    <p>${description}</p>
+                </div>
+                `;
+            }
+        }
+    });    
+}    
 
 function searchCafes(){
     const searchText = searchInput.value.trim().toLowerCase();
@@ -116,7 +104,7 @@ locationBtn.addEventListener("click", function(){
                 console.log("longitude: ", longitude);
 
                 searchMessage.textContent = "your location was retrieved successfully!";
-            }, 
+            },
             function(){
                 searchMessage.textContent = "unable to retrieve your location.";
             }

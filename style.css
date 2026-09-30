@@ -212,3 +212,32 @@ main{
     font-size: 14px;
     margin: 5px 0;
 }
+.details-btn{
+    margin-top: 10px;
+    padding: 9px 15px;
+    background-color: #6f4e37;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+.details-btn:hover{
+    background-color: #4b3425;
+}
+
+#cafe-details{
+    margin-top: 20px;
+}
+
+.details-card{
+    background-color: #f8f5f0;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 18px;
+}
+.details-card h3{
+    color: #6f4e37;
+    margin-bottom: 10px;
+}
