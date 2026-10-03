@@ -13,29 +13,53 @@ const resultsCount = document.getElementById("results-count");
 
 let userLocation = null;
 
-function displayCafes(cafeArray){
+const map = L.map("map").setView([21.2514, 81.6296], 13);
+
+L.tileLayer("https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", {
+    maxZoom: 20,
+    attribution: '&copy; OpenStreetMap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+function displayCafes(cafeArray) {
     cafeList.innerHTML = "";
 
-    if(cafeArray.length === 0){
-        cafeList.innerHTML = "<p class = 'no-results'> No cafes found.</p>";
+    if (cafeArray.length === 0) {
+        cafeList.innerHTML = "<p class='no-results'>No cafes found.</p>";
         return;
     }
-
-    cafeArray.forEach(function (cafe){
-        const{id,name,rating,address,price,description} = cafe;
+    cafeArray.forEach(function (cafe) {
+        const { id, name, rating, address, price, description } = cafe;
         const cafeCard = document.createElement("div");
         cafeCard.classList.add("cafe-card");
+
         cafeCard.innerHTML = `
-            <h3>${cafe.name}</h3>
-            <p>⭐ ${cafe.rating}</p>
-            <p>📍 ${cafe.address}</p>
-            <p class="description">${cafe.description}</p>
-            <p>💰 ${cafe.price}</p>
-            <button class="details-btn" data-id="${cafe.id}">View Details</button>
-            `;
-            cafeList.appendChild(cafeCard);
+            <h3>${name}</h3>
+            <p>⭐ ${rating}</p>
+            <p>📍 ${address}</p>
+            <p class="description">${description}</p>
+            <p>💰 ${price}</p>
+            <button class="details-btn" data-id="${id}">View Details</button>
+        `;
+
+        cafeList.appendChild(cafeCard);
     });
-} 
+}
+
+function displayCafeMarkers(cafeArray) {
+    cafeArray.forEach(function (cafe) {
+        if (!cafe.latitude || !cafe.longitude) return;
+
+        L.marker([cafe.latitude, cafe.longitude])
+            .addTo(map)
+            .bindPopup(`
+                <strong>${cafe.name}</strong><br>
+                ⭐ ${cafe.rating}<br>
+                📍 ${cafe.address}<br>
+                💰 ${cafe.price}
+            `);
+    });
+}
+
 
 function applyFilters(){
     const searchText = searchInput.value.trim().toLowerCase();
@@ -68,6 +92,7 @@ cafeList.addEventListener("click", function(event){
         const selectedCafe = cafes.find(function(cafe){
             return cafe.id === cafeId;
         });
+
         if (selectedCafe && cafeDetails) {
             const {
                 name,
@@ -102,6 +127,7 @@ searchInput.addEventListener("input", applyFilters);
 
 ratingFilter.addEventListener("change", applyFilters);
 priceFilter.addEventListener("change", applyFilters);
+
 resetBtn.addEventListener("click", function(){
     searchInput.value = "";
     ratingFilter.value = "all";
@@ -117,24 +143,31 @@ locationBtn.addEventListener("click", function(){
         searchMessage.textContent = "Geolocation is not supported by your browser."
         return;
     }
-        navigator.geolocation.getCurrentPosition(function(position){
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
+    searchMessage.textContent = "Getting your location...";
+    navigator.geolocation.getCurrentPosition(function(position){
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
 
-                console.log("Latitude: ", latitude);
-                console.log("longitude: ", longitude);
+            console.log("Latitude: ", latitude);
+            console.log("longitude: ", longitude);
 
-                userLocation = {
-                    latitude: latitude,
-                    longitude: longitude
-                };        
-                searchMessage.textContent = "your location was retrieved successfully!";
-                console.log("User location: ", userLocation);
-            },
+            userLocation = {
+                latitude: latitude,
+                longitude: longitude
+            };        
+            searchMessage.textContent = "your location was retrieved successfully!";
+            
+            map.setView([latitude, longitude], 15);
+
+            L.marker([latitude, longitude])
+            .addTo(map)
+            .bindPopup("📍 You are here!")
+            .openPopup();
+        },
             function(error){
                 switch(error.code){
                     case error.PERMISSION_DENIED:
-                        searchMessage.textContent = "Location permission wasm denied.";
+                        searchMessage.textContent = "Location permission was denied.";
                         break;
                     case error.POSITION_UNAVAILABLE:
                         searchMessage.textContent = "Location information is unavailable";
@@ -143,12 +176,11 @@ locationBtn.addEventListener("click", function(){
                         searchMessage.textContent = "Location request timeout.";
                         break;
                     default: 
-                    searchMessage.textContent = "Unable tpo get your location.";
+                    searchMessage.textContent = "Unable to get your location.";
                 }
                 console.log("Geolocation Error: ", error);
             }
         );
 }   );
 applyFilters();
-
-
+displayCafeMarkers(cafes);

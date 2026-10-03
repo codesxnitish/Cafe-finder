@@ -133,13 +133,10 @@ main{
     padding : 25px 10px;
 }
 #map{
-    min-height: 400px;
-    background-color: #e9e5df;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #777;
+    height: 450px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
 }
 @media(max-width: 768px){
     .results{
