@@ -11,6 +11,8 @@ const openFilter = document.getElementById("open-filter");
 const resetBtn = document.getElementById("reset-btn");
 const resultsCount = document.getElementById("results-count");
 
+let userLocation = null;
+
 function displayCafes(cafeArray){
     cafeList.innerHTML = "";
 
@@ -111,25 +113,42 @@ resetBtn.addEventListener("click", function(){
 });
 
 locationBtn.addEventListener("click", function(){
-    if(navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(
-            function(position){
+    if(!navigator.geolocation){
+        searchMessage.textContent = "Geolocation is not supported by your browser."
+        return;
+    }
+        navigator.geolocation.getCurrentPosition(function(position){
                 const latitude = position.coords.latitude;
                 const longitude = position.coords.longitude;
 
                 console.log("Latitude: ", latitude);
                 console.log("longitude: ", longitude);
 
+                userLocation = {
+                    latitude: latitude,
+                    longitude: longitude
+                };        
                 searchMessage.textContent = "your location was retrieved successfully!";
+                console.log("User location: ", userLocation);
             },
-            function(){
-                searchMessage.textContent = "unable to retrieve your location.";
+            function(error){
+                switch(error.code){
+                    case error.PERMISSION_DENIED:
+                        searchMessage.textContent = "Location permission wasm denied.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        searchMessage.textContent = "Location information is unavailable";
+                        break;
+                    case error.TIMEOUT:
+                        searchMessage.textContent = "Location request timeout.";
+                        break;
+                    default: 
+                    searchMessage.textContent = "Unable tpo get your location.";
+                }
+                console.log("Geolocation Error: ", error);
             }
         );
-    }else{
-        searchMessage.textContent = "Geolocation is not supported by your browser.";
-    }
-});
+}   );
 applyFilters();
 
 
