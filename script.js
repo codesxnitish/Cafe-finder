@@ -4,6 +4,12 @@ const locationBtn = document.getElementById("location-btn")
 const cafeList = document.getElementById("cafe-list")
 const searchMessage = document.getElementById("search-message");
 const cafeDetails = document.getElementById("cafe-details");
+const ratingFilter = document.getElementById("rating-filter");
+const priceFilter = document.getElementById("price-filter");
+const distanceFilter = document.getElementById("distance-filter");
+const openFilter = document.getElementById("open-filter");
+const resetBtn = document.getElementById("reset-btn");
+const resultsCount = document.getElementById("results-count");
 
 function displayCafes(cafeArray){
     cafeList.innerHTML = "";
@@ -27,70 +33,81 @@ function displayCafes(cafeArray){
             `;
             cafeList.appendChild(cafeCard);
     });
-}
-if(cafeList){
-    cafeList.addEventListener("click", function(event){
-        if(event.target.classList.contains("details-btn")){
-            const cafeId = Number(event.target.dataset.id);
-            const selectedCafe = cafes.find(function(cafe){
-                return cafe.id === cafeId;
-            });
-            if (selectedCafe && cafeDetails) {
-                const {
-                    name,
-                    rating,
-                    address,
-                    price,
-                    description
-                } = selectedCafe;
+} 
 
-                cafeDetails.innerHTML = `
-                    <div class="details-card">
-                    <h3>${name}</h3>
-                    <p>⭐ Rating: ${rating}</p>
-                    <p>📍 Address: ${address}</p>
-                    <p>💰 Price: ${price}</p>
-                    <p>${description}</p>
-                </div>
-                `;
-            }
-        }
-    });    
-}    
-
-function searchCafes(){
+function applyFilters(){
     const searchText = searchInput.value.trim().toLowerCase();
+    const selectRating = ratingFilter.value;
+    const selectedPrice = priceFilter.value;
 
-    if(searchText === ""){
-        searchMessage.textContent = "Please enter a cafe name!";
-        displayCafes(cafes);
-        return;
-    }
     const filteredCafes = cafes.filter(function(cafe){
-        return cafe.name.toLowerCase().includes(searchText);
+        const matchesSearch = cafe.name.toLowerCase().includes(searchText)||
+                            cafe.address.toLowerCase().includes(searchText);
+        const matchesRating = selectRating === "all" || cafe.rating>=Number(selectRating);
+        
+        const matchesPrice = selectedPrice === "all" || cafe.price === selectedPrice;
+
+        return matchesSearch && matchesRating && matchesPrice;
     });
 
     displayCafes(filteredCafes);
 
+    resultsCount.textContent = `Showing ${filteredCafes.length} of ${cafes.length} cafes`;
+
     if(filteredCafes.length === 0){
         searchMessage.textContent = "No cafes found.";
-    }
-    else{
-        searchMessage.textContent = `${filteredCafes.length} cafe(s) found.`;
+    }else{
+        searchMessage.textContent ="";
     }
 }
-searchBtn.addEventListener("click",searchCafes);
+cafeList.addEventListener("click", function(event){
+    if(event.target.classList.contains("details-btn")){
+        const cafeId = Number(event.target.dataset.id);
+        const selectedCafe = cafes.find(function(cafe){
+            return cafe.id === cafeId;
+        });
+        if (selectedCafe && cafeDetails) {
+            const {
+                name,
+                rating,
+                address,
+                price,
+                description
+            } = selectedCafe;
+
+                cafeDetails.innerHTML = `
+                <div class="details-card">
+                <h3>${name}</h3>
+               <p>⭐ Rating: ${rating}</p>
+                <p>📍 Address: ${address}</p>
+                <p>💰 Price: ${price}</p>
+                <p>${description}</p>
+            </div>
+            `;
+        }
+    }
+});   
+
+searchBtn.addEventListener("click",applyFilters);
 
 searchInput.addEventListener("keydown", function (event) {
     if(event.key === "Enter"){
-        searchCafes();
+        applyFilters();
     }
 });
-searchInput.addEventListener("input", function () {
-    if (searchInput.value.trim() === "") {
-        searchMessage.textContent = "";
-        displayCafes(cafes);
-    }
+
+searchInput.addEventListener("input", applyFilters);
+
+ratingFilter.addEventListener("change", applyFilters);
+priceFilter.addEventListener("change", applyFilters);
+resetBtn.addEventListener("click", function(){
+    searchInput.value = "";
+    ratingFilter.value = "all";
+    priceFilter.value = "all";
+    distanceFilter.value = "all";
+    openFilter.checked = false;
+    searchMessage.textContent = "";
+    applyFilters();
 });
 
 locationBtn.addEventListener("click", function(){
@@ -113,5 +130,6 @@ locationBtn.addEventListener("click", function(){
         searchMessage.textContent = "Geolocation is not supported by your browser.";
     }
 });
+applyFilters();
 
-displayCafes(cafes);
+

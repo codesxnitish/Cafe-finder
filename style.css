@@ -241,3 +241,24 @@ main{
     color: #6f4e37;
     margin-bottom: 10px;
 }
+
+.filters select, #reset-btn{
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px; 
+}
+#reset-btn{
+    background-color: #6f4e37;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+#reset-btn:hover{
+    background-color: #4b3425;
+}
+#results-count{
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
